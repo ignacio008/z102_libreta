@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+import '../page/prueba_page_turn.dart';
+
 class Paleta extends StatefulWidget {
   Paleta({Key? key}) : super(key: key);
 
@@ -46,8 +48,9 @@ double _clampMin(double v) {
           const SizedBox(width: 12.0),
           GestureDetector(
             onTap: (){
-//  Navigator.push(context, MaterialPageRoute(builder: (context)=>Prueba(
-//      )));
+  // Navigator.push(context, MaterialPageRoute(builder: (context)=>PruebaPageTurn(
+  //     )));
+      print("cargando");
 
             },
             child:  Container(

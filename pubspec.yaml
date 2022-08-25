@@ -40,6 +40,8 @@ dependencies:
   syncfusion_flutter_calendar: ^20.2.44
   intl: ^0.17.0
   add_2_calendar: ^2.1.2
+  flutter_fadein: ^2.0.0
+
 
 dev_dependencies:
   flutter_test:

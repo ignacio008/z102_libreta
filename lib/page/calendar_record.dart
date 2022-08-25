@@ -40,7 +40,7 @@ class _CalendarRecordState extends State<CalendarRecord> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Fecha Importante", style:TextStyle(fontSize: 25)),
+            Text("Calendario", style:TextStyle(fontSize: 25)),
             SizedBox(height:15),
           Center(
           child: GestureDetector(
@@ -48,6 +48,7 @@ class _CalendarRecordState extends State<CalendarRecord> {
               key: _flipKey,
                textureSize: size * 2,
               child: Container(
+               
                 width: MediaQuery.of(context).size.width*0.886,
                 height:MediaQuery.of(context).size.height*0.52,
                 child: Stack(

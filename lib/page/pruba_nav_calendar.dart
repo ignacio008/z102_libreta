@@ -2,8 +2,13 @@ import 'dart:collection';
 
 // import 'package:device_calendar/device_calendar.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:flip_widget/flip_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:z102_libreta/models/meeting_description_calen_model.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
+
+
+import 'dart:math' as math;
 
 class PruebaNavCalenadar extends StatefulWidget {
   PruebaNavCalenadar({Key? key}) : super(key: key);
@@ -11,135 +16,743 @@ class PruebaNavCalenadar extends StatefulWidget {
   @override
   State<PruebaNavCalenadar> createState() => _PruebaNavCalenadarState();
 }
+const double _MinNumber = 0.008;
+double _clampMin(double v) {
+  if (v < _MinNumber && v > -_MinNumber) {
+    if (v >= 0) {
+      v = _MinNumber;
+    } else {
+      v = -_MinNumber;
+    }
+  }
+  return v;
+}
+
 
 class _PruebaNavCalenadarState extends State<PruebaNavCalenadar> {
 
-//  late List<UnmodifiableListView<Event>> calEventsList;
-//   late List<Calendar> calendars;
-//  DeviceCalendarPlugin _deviceCalendarPlugin = new DeviceCalendarPlugin();
-// getUsersCalendar() async{
-//   try{
-//     var permissionGranted = await _deviceCalendarPlugin.hasPermissions();
-//     if(permissionGranted.isSuccess && !permissionGranted.data!){
+GlobalKey<FlipWidgetState> _flipKey = GlobalKey();
+   Offset _oldPosition = Offset.zero;
+   Size size = Size(256, 256);
+final controller = FadeInController();
 
-//     permissionGranted = await _deviceCalendarPlugin.requestPermissions();
-
-//     if(!permissionGranted.isSuccess || !permissionGranted.data!){
-//      return;
-//    }
-//   }
-
-//  final startDate = DateTime.now().add(Duration(days: 1));
-//  final endDate = DateTime.now().add(Duration(days: 2));
-// final List<Meeting> meetings = <Meeting>[];
-
-//  final calResult = await _deviceCalendarPlugin.retrieveCalendars();
-//  print("imprimi ${calResult.data!}");
-//  calendars = calResult.data!;
-//  for(int i = 0; i < calendars.length; i++){
-//   final calEvents = await _deviceCalendarPlugin.retrieveEvents(calendars[i].id, RetrieveEventsParams(startDate: startDate, endDate: endDate));
-//   calEventsList.add(calEvents.data!);
- 
-// }}
-
-// catch(e){
-// print(e);
-// }
-//  print("imprimes ${calEventsList}");
-// }
-Event buildEvent({Recurrence? recurrence}) {
-    return Event(
-      title: 'Test eventeee',
-      description: 'example',
-      location: 'Flutter app',
-      startDate: DateTime.now(),
-      endDate: DateTime.now().add(Duration(minutes: 30)),
-      allDay: false,
-      iosParams: IOSParams(
-        reminder: Duration(minutes: 40),
-      ),
-      androidParams: AndroidParams(
-        emailInvites: ["ortizignacio008@gmail.com"],
-      ),
-      recurrence: recurrence,
-    );
-  }
-
+fadeIn(){
+  setState(() {   
+  controller.fadeIn();
+  });
+}
   @override
   void initState() {
     // TODO: implement initState
     // getUsersCalendar();
+    fadeIn();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-     
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Add event to calendar example'),
-        ),
-        body: ListView(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ListTile(
-              title: Text('Add normal event'),
-              trailing: Icon(Icons.calendar_today),
-              onTap: () {
-                Add2Calendar.addEvent2Cal(
-                  buildEvent(),
-                );
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: const Text('Add event with recurrence 1'),
-              subtitle: const Text("weekly for 3 months"),
-              trailing: Icon(Icons.calendar_today),
-              onTap: () {
-                Add2Calendar.addEvent2Cal(buildEvent(
-                  recurrence: Recurrence(
-                    frequency: Frequency.weekly,
-                    endDate: DateTime.now().add(Duration(days: 60)),
-                  ),
-                ));
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: const Text('Add event with recurrence 2'),
-              subtitle: const Text("every 2 months for 6 times (1 year)"),
-              trailing: Icon(Icons.calendar_today),
-              onTap: () {
-                Add2Calendar.addEvent2Cal(buildEvent(
-                  recurrence: Recurrence(
-                    frequency: Frequency.monthly,
-                    interval: 2,
-                    ocurrences: 6,
-                  ),
-                ));
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: const Text('Add event with recurrence 3'),
-              subtitle:
-                  const Text("RRULE (android only) every year for 10 years"),
-              trailing: Icon(Icons.calendar_today),
-              onTap: () {
-                Add2Calendar.addEvent2Cal(buildEvent(
-                  recurrence: Recurrence(
-                    frequency: Frequency.yearly,
-                    rRule: 'FREQ=YEARLY;COUNT=10;WKST=SU',
-                  ),
-                ));
-              },
-            ),
-            Divider(),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title:const Text("Calendario"),
       ),
+      body:SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height:MediaQuery.of(context).size.height,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Calendario", style:TextStyle(fontSize: 25)),
+            SizedBox(height:15),
+          Center(
+          child: Container(
+        width: MediaQuery.of(context).size.width,
+        height:MediaQuery.of(context).size.height*0.4,
+        // color:Colors.blue,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap:(){
+                    
+                  },
+                  child: Container(
+                  width: MediaQuery.of(context).size.width*0.45,
+                  height:MediaQuery.of(context).size.height*0.4,
+                  color:Colors.grey[400],
+                  child:Column(
+                    children: [
+                      Container(
+                              height: 30,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                              padding: EdgeInsets.all(1.0),
+                              child:const Center(
+                                child: Text("Monday", style: TextStyle(
+                                  fontSize: 10,
+                                ),),
+                              ),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                              padding: EdgeInsets.all(1.0),
+                              child:const Center(
+                                child: Text("Tuesday", style: TextStyle(
+                                  fontSize: 10,
+                                ),),
+                              ),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                              padding: EdgeInsets.all(1.0),
+                              child:const Center(
+                                child: Text("Wednesday", style: TextStyle(
+                                  fontSize: 10,
+                                ),),
+                              ),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                       Container(
+                        height: 60,
+                        decoration: const BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.15,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  ),
+                ),
+              
+                GestureDetector(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width*0.5,
+                    height:MediaQuery.of(context).size.height*0.4,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        FadeIn(
+                          duration: Duration(milliseconds: 550),
+                              curve: Curves.easeIn,
+                              controller: controller,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width*0.45,
+                            height: MediaQuery.of(context).size.height*0.44, 
+                           color:Colors.grey[400],
+                           child:
+                           
+                           Column(
+                    children: [
+                      Container(
+                              height: 30,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.13,
+                              padding: EdgeInsets.all(1.0),
+                              child:const Center(
+                                child: Text("Thursday", style: TextStyle(
+                                  fontSize: 10,
+                                ),),
+                              ),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                              padding: EdgeInsets.all(1.0),
+                              child:const Center(
+                                child: Text("friday", style: TextStyle(
+                                  fontSize: 10,
+                                ),),
+                              ),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                              padding: EdgeInsets.all(1.0),
+                              child:const Center(
+                                child: Text("saturday", style: TextStyle(
+                                  fontSize: 10,
+                                ),),
+                              ),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                             Container(
+                              width: MediaQuery.of(context).size.width*0.1,
+                              padding: EdgeInsets.all(1.0),
+                              child:const Center(
+                                child: Text("sunday", style: TextStyle(
+                                  fontSize: 10,
+                                ),),
+                              ),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.13,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.1,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.13,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.1,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.13,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.1,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.13,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.1,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                       Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.13,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.11,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.1,
+                               height: 60,
+                              padding: EdgeInsets.all(5.0),
+                              child:const Text("", style: TextStyle(
+                                fontSize: 10,
+                              ),),
+                              decoration: const BoxDecoration(
+                                border: Border(right: BorderSide(color: Colors.white, width: 1)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                           
+                          ),
+                        ),
+                        Positioned(
+                          left: -16,
+                          child: Container(
+                            width: 52.7,
+                            height: 228,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(0.0),
+                              child: Image.asset("assets/calendarioArgoll.PNG"),
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                          ),
+                        ),
+                      
+                      
+                      ],
+                    ),
+                    
+                  ),
+
+  
+                ),
+              ],
+            ),
+          ),
+        ),
+
+
+
+
+
+
+
+
+
+
+        ]),
+      )
     );
   }
 }

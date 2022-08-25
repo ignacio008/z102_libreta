@@ -200,13 +200,13 @@ class _CalendarState extends State<Calendar> {
         location: "Horario",
         startDate: startTime,
         endDate: endTime.add(
-          Duration(hours: 2),
+          const Duration(hours: 2),
         ),
       );
       Add2Calendar.addEvent2Cal(newEvent,);               
   }
 void _selectDateSalida(BuildContext context, TimeOfDay selectday)  async {
-      FocusScope.of(context).requestFocus(new FocusNode());
+      FocusScope.of(context).requestFocus(FocusNode());
           TimeOfDay? newSelectedDate = await showTimePicker(context: context, initialTime: _selectedDateSalida != null ? _selectedDateSalida : TimeOfDay.now(), 
             );
       if (newSelectedDate != null) {
