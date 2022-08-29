@@ -48,8 +48,8 @@ double _clampMin(double v) {
           const SizedBox(width: 12.0),
           GestureDetector(
             onTap: (){
-  // Navigator.push(context, MaterialPageRoute(builder: (context)=>PruebaPageTurn(
-  //     )));
+   Navigator.push(context, MaterialPageRoute(builder: (context)=>PruebaPageTurn(
+       )));
       print("cargando");
 
             },

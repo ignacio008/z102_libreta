@@ -41,6 +41,8 @@ dependencies:
   intl: ^0.17.0
   add_2_calendar: ^2.1.2
   flutter_fadein: ^2.0.0
+  flip_board: ^0.6.1
+  device_calendar: ^4.2.0
 
 
 dev_dependencies:

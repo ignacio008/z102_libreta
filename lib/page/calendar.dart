@@ -1,5 +1,6 @@
 
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -7,7 +8,9 @@ import 'package:toast/toast.dart';
 
 import '../models/meetingDataSource_description.dart';
 import '../models/meeting_description_calen_model.dart';
-import 'package:add_2_calendar/add_2_calendar.dart';
+// import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:device_calendar/device_calendar.dart';
+import 'package:timezone/timezone.dart';
 
 class Calendar extends StatefulWidget {
   Calendar({Key? key}) : super(key: key);
@@ -25,7 +28,42 @@ class _CalendarState extends State<Calendar> {
    TextEditingController _textEditingControllerDescription = TextEditingController();
    
      DateTime? _textoPruebaMioSalida;
+    // final _deviceCalendarPlugin = new DeviceCalendarPlugin();
+late DeviceCalendarPlugin _deviceCalendarPlugin;
 
+ late List<Calendar> _calendars;
+  late Calendar _selectedCalendar;
+
+
+  CalendarPageState() {
+    _deviceCalendarPlugin = new DeviceCalendarPlugin();
+  }
+   void _retrieveCalendars() async {
+    try {
+      var permissionsGranted = await _deviceCalendarPlugin.hasPermissions();
+      if (permissionsGranted.isSuccess && !permissionsGranted.data!) {
+        permissionsGranted = await _deviceCalendarPlugin.requestPermissions();
+        if (!permissionsGranted.isSuccess || !permissionsGranted.data!) {
+          return;
+        }
+      }
+
+      final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
+      setState(() {
+        _calendars = calendarsResult.data as List<Calendar>;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+@override
+  void initState() {
+    // TODO: implement initState
+    _retrieveCalendars();
+    CalendarPageState();
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     
@@ -188,22 +226,35 @@ class _CalendarState extends State<Calendar> {
         final DateTime today = DateTime.now();
         final DateTime startTime = DateTime(detail.date!.year, detail.date!.month, detail.date!.day, _textoPruebaMioSalida==null?12:_textoPruebaMioSalida!.hour,_textoPruebaMioSalida==null?00: _textoPruebaMioSalida!.minute);
         final DateTime endTime = startTime.add(const Duration(hours: 2));
-       
+
+        Location _currentLocation = getLocation('America/Chihuahua');
+        final detroit = getLocation('America/Detroit');
+       final TZDateTime start=TZDateTime.now(detroit);
+       final TZDateTime startTimeNew=TZDateTime(_currentLocation,detail.date!.year, detail.date!.month, detail.date!.day, _textoPruebaMioSalida==null?12:_textoPruebaMioSalida!.hour,_textoPruebaMioSalida==null?00: _textoPruebaMioSalida!.minute);
+
+       final TZDateTime endTimeNew=startTimeNew.add(const Duration(hours: 2));
 
             setState(() {        
         meetings.add(Meeting(
             '${_description.isEmpty?"Recordatorio":_description }', startTime, endTime, const Color(0xFF0F8644), false));
             });
-             final Event newEvent = Event(
-        title: "${_description.isEmpty?"Recordatorio":_description }",
-        description: "${_description.isEmpty?"Recordatorio":_description }",
-        location: "Horario",
-        startDate: startTime,
-        endDate: endTime.add(
-          const Duration(hours: 2),
-        ),
-      );
-      Add2Calendar.addEvent2Cal(newEvent,);               
+              final Event newEvent = Event(
+               "02",
+         title: "${_description.isEmpty?"Recordatorio":_description }",
+         description: "${_description.isEmpty?"Recordatorio":_description }",
+         location: "${_currentLocation}",
+         start: startTimeNew,
+         end: endTimeNew.add(
+           const Duration(hours: 2),
+                
+         ),
+                
+       );
+      // Add2Calendar.addEvent2Cal(newEvent,);   
+      print(newEvent.location);
+    _deviceCalendarPlugin.createOrUpdateEvent(newEvent);
+    print(_deviceCalendarPlugin.createOrUpdateEvent(newEvent));
+   
   }
 void _selectDateSalida(BuildContext context, TimeOfDay selectday)  async {
       FocusScope.of(context).requestFocus(FocusNode());
