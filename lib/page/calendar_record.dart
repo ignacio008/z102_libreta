@@ -2,7 +2,7 @@ import 'package:flip_widget/flip_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:turn_page_transition/turn_page_transition.dart';
 
-import 'calendar.dart';
+import 'calendars.dart';
 import 'one_page.dart';
 import 'dart:math' as math;
 
@@ -57,7 +57,7 @@ class _CalendarRecordState extends State<CalendarRecord> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width*0.79,
                       height: MediaQuery.of(context).size.height*0.5,
-                      child: Calendar(),
+                      child: Calendars(),
                     ),
                     Positioned(
                       left: -13,

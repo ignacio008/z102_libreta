@@ -7,5 +7,7 @@ class Meeting {
   DateTime to;
   Color background;
   bool isAllDay;
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+  String calendarId;
+  String eventId;
+  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay,this.calendarId,this.eventId);
 }
